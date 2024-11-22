@@ -1,0 +1,75 @@
+.report-screen {
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.report-table-wrapper {
+  max-height: 400px; /* You can adjust this height based on your design */
+  overflow-y: auto;
+  margin: 20px auto;
+  width: 90%; /* Increased width to 90% */
+}
+
+.report-table {
+  width: 100%;
+  margin: 20px auto;
+  border-collapse: collapse;
+}
+
+.report-table th,
+.report-table td {
+  border: 1px solid #ddd;
+  padding: 15px; /* Increased padding for better readability */
+  text-align: center;
+}
+
+.report-table th {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.analyze-button {
+  padding: 8px 15px; /* Added some padding to the button */
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.analyze-button:hover {
+  background-color: #45a049;
+}
+
+.back-button {
+  margin-top: 20px;
+  padding: 12px 25px; /* Increased padding for better button size */
+  background-color: #f44336;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.back-button:hover {
+  background-color: #e53935;
+}
+
+/* Scroll to Top Button */
+.scroll-top-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.scroll-top-button:hover {
+  background-color: #45a049;
+}
