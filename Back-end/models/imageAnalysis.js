@@ -1,9 +1,10 @@
-const fs = require('fs');
-const path = require('path');
+// File: imageAnalysisService.js
 
-const os = require('os');
+const fs = require("fs");
+const path = require("path");
+const os = require("os");
 
-
+// Constants
 const API_URL = "https://api-inference.huggingface.co/models/trpakov/vit-face-expression";
 const API_TOKEN = "Bearer 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";
 
@@ -14,7 +15,7 @@ async function readFileAsync(filePath) {
 
 // Helper to send image data to the Hugging Face API
 async function sendToAPI(fileBuffer) {
-    const fetch = (await import('node-fetch')).default;
+    const fetch = (await import("node-fetch")).default;
 
     const response = await fetch(API_URL, {
         headers: {
@@ -40,15 +41,23 @@ async function analyzeImage(filePath) {
         throw new Error("Invalid API response format");
     }
 
-    const emotions = result[0];
-    const maxEmotion = Object.entries(emotions).reduce((a, b) => (a[1] > b[1] ? a : b));
+    // Transform API result to the desired format
+    const emotions = {};
+    let dominantEmotion = { emotion: "", score: 0 };
+
+    result.forEach(({ label, score }) => {
+        const percentageScore = (score * 100).toFixed(2) + "%";
+        emotions[label] = percentageScore;
+
+        if (score > dominantEmotion.score) {
+            dominantEmotion = { emotion: label, score: percentageScore };
+        }
+    });
 
     return {
+        dominant_emotion: dominantEmotion.emotion,
+        dominant_score: dominantEmotion.score,
         emotions,
-        max_emotion: {
-            emotion: maxEmotion[0],
-            score: maxEmotion[1],
-        },
     };
 }
 
@@ -67,30 +76,59 @@ async function analyzeFolder(folderPath, maxConcurrent = os.cpus().length) {
     }
 
     const filePaths = files.map((file) => path.join(folderPath, file));
-    const resultsQueue = [];
+    const results = [];
     const semaphore = Array(maxConcurrent).fill(Promise.resolve());
-    const results = {};
 
     for (const filePath of filePaths) {
         const task = async () => {
             try {
-                const result = await analyzeImage(filePath);
-                results[path.basename(filePath)] = result;
+                const analysis = await analyzeImage(filePath);
+                results.push({ ...analysis, file: path.basename(filePath) });
             } catch (error) {
-                results[path.basename(filePath)] = { error: error.message };
+                results.push({ error: error.message, file: path.basename(filePath) });
             }
         };
 
         const currentTask = semaphore.shift().then(task);
         semaphore.push(currentTask);
-        resultsQueue.push(currentTask);
     }
 
-    await Promise.all(resultsQueue);
+    await Promise.all(semaphore);
     return results;
 }
 
+// Controller for folder analysis (for integration with an API)
+async function analyzeFolderController(req, res) {
+    try {
+        const { folderPath } = req.body;
+
+        if (!folderPath) {
+            return res.status(400).json({ error: "Folder name is required" });
+        }
+
+        const analysisResults = await analyzeFolder(folderPath);
+        return res.json(analysisResults);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+// Exporting functions for external usage
 module.exports = {
     analyzeImage,
     analyzeFolder,
+    analyzeFolderController,
 };
+
+// Example usage for standalone testing
+if (require.main === module) {
+    const folderPath = "./images"; // Replace with your folder path
+    analyzeFolder(folderPath, 8) // Adjust concurrency if needed
+        .then((results) => {
+            console.log(JSON.stringify(results, null, 2));
+        })
+        .catch((error) => {
+            console.error("Error:", error.message);
+        });
+}
