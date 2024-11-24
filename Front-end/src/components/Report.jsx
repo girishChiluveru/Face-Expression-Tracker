@@ -31,29 +31,27 @@ const Report = () => {
   }, []);
 
   // Modified handleAnalyze function
-  const handleAnalyze = async (childname, sessionId) => {
+  const handleAnalyze = async (childName, sessionId) => {
     try {
-      const folderName = `${childname}/${sessionId}`; // Path relative to "uploads"
-      const response = await fetch('http://localhost:3000/process', {
+      // Call the /process route on the server to start analysis
+      const response = await fetch('http://127.0.0.1:3000/process', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ folderName }), // Send folder name to API
+        body: JSON.stringify({ sessionId,childName }),
       });
-
+  
       if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
+        throw new Error(`Server responded with status ${response.status}`);
       }
-
-      const data = await response.json();
-      console.log("Analysis Results:", data);
-
-      // Implement further actions based on analysis results
-      alert(`Analysis for ${childname}'s session ${sessionId} completed. Check console for details.`);
+  
+      const result = await response.json();
+      console.log(result);
+      alert(`Analysis for session ${sessionId} processed! Check console for details.`);
     } catch (error) {
-      console.error("Error analyzing session:", error);
-      alert(`Failed to analyze ${childname}'s session ${sessionId}.`);
+      console.error('Error processing analysis:', error);
+      alert(`Failed to process analysis for session ${sessionId}.`);
     }
   };
 

@@ -24,44 +24,58 @@ app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/',reportRoute);
-let analysisResults = {};
+let analysisResults = [];
 
-// POST endpoint to send the folder name and get analyzed results
+
+
 app.post('/process', async (req, res) => {
-    try {
-        const { folderName } = req.body;
-
-        if (!folderName) {
-            return res.status(400).json({ error: 'folderName is required' });
-        }
-
-        // Send the folderName to the /analyze endpoint
-        const response = await fetch('http://localhost:3000/analyze', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ folderName }),
-        });
-
-        if (!response.ok) {
-            return res.status(500).json({ error: 'Failed to analyze folder' });
-        }
-
-        const data = await response.json();
-
-        // Store the result in the global analysisResults object
-        analysisResults[folderName] = data;
-
-        res.json({ message: 'Folder processed successfully', data });
-    } catch (error) {
-        res.status(500).json({ error: 'Internal server error', details: error.message });
+    const { sessionId, childName } = req.body;
+  
+    if (!sessionId || !childName) {
+      return res.status(400).json({ error: 'sessionId and childName are required' });
     }
-});
-
-// GET endpoint to retrieve the analyzed results
+  
+    try {
+      // Construct the folder path dynamically
+      const photosBasePath = path.join(__dirname, 'photos'); // Adjust the base folder if needed
+      const folderPath = path.join(photosBasePath, childName, sessionId);
+      console.log(folderPath);
+      // Check if the folder path exists
+      if (!fs.existsSync(folderPath)) {
+        console.error(`Error: Incoming path does not exist: ${folderPath}`);
+        return res.status(400).json({ error: 'Invalid folder path' });
+      }
+  
+      // Call the Flask API with the folder path
+      const response = await fetch('http://localhost:3000/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ folderPath }),
+    });
+      const result = await response.json();
+  
+      if (!response.ok) {
+        return res.status(response.status).json({
+          error: result.error || 'Error analyzing emotions',
+        });
+      }
+  
+      // Save the result in memory or any desired storage
+      analysisResults.push({ sessionId, childName, result });
+  
+      return res.status(200).json({
+        message: 'Analysis processed successfully',
+        data: result,
+      });
+    } catch (error) {
+      console.error('Error analyzing session:', error);
+      return res.status(500).json({ error: 'Error processing analysis' });
+    }
+  });
 app.get('/results', (req, res) => {
     res.json(analysisResults);
 });
 app.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`);
-    console.log(`API Endpoint: http://localhost:${PORT}/api/analyze`);
+    
 });
