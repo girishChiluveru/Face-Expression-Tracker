@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import '../styles/MemoryGame.css';
 import Capturing from './Capturing';
 import { useNavigate } from 'react-router-dom';
-const gameId=3;
+const gameId="3";
 const colors = ['#FF5733', '#33FF57', '#3357FF', '#FF33A6', '#F3FF33', '#33FFF6', '#A6FF33', '#33A6FF'];
 
 function MemoryGame({ onFinish, childName, sessionId }) {

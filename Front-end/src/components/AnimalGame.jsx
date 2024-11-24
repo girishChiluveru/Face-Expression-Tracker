@@ -8,7 +8,7 @@ import Capturing from './Capturing';
 import { useNavigate } from 'react-router-dom';
 
 
-const gameId=2;
+const gameId="2";
 const animals = [
   { name: 'lion', image: '🦁' },
   { name: 'tiger', image: '🐯' },

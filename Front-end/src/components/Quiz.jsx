@@ -15,7 +15,7 @@ const Quiz = ({ onQuizEnd, childName, sessionId }) => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [time, setTime] = useState(15);
   const [shuffledQuestions, setShuffledQuestions] = useState([]);
-  const gameId = 1;
+  const gameId = "1";
 
   useEffect(() => {
     const level1Questions = questions.level1
