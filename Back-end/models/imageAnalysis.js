@@ -46,7 +46,7 @@ async function analyzeImage(filePath) {
     let dominantEmotion = { emotion: "", score: 0 };
 
     result.forEach(({ label, score }) => {
-        const percentageScore = (score * 100).toFixed(2) + "%";
+        const percentageScore = (score * 100).toFixed(2);
         emotions[label] = percentageScore;
 
         if (score > dominantEmotion.score) {

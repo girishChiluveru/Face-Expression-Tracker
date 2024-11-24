@@ -69,9 +69,9 @@ def analyze_emotions():
             # Append successful analysis to results
             results.append({
                 "file": image_file,
-                "emotions": {emotion: f"{score:.2f}%" for emotion, score in emotions.items()},
+                "emotions": {emotion: f"{score:.2f}" for emotion, score in emotions.items()},
                 "dominant_emotion": max_emotion,
-                "dominant_score": f"{emotions[max_emotion]:.2f}%"
+                "dominant_score": f"{emotions[max_emotion]:.2f}"
             })
         except Exception as e:
             logging.exception(f"Error analyzing image: {image_path}")
