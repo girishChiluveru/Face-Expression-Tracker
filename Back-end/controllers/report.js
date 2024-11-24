@@ -49,13 +49,25 @@ async function handleUploading(req, res) {
         fs.writeFileSync(filePath, base64Data, 'base64');
 
         // Add only the image path to the `images` array
-        const imagePathObject = { imgpath: path.join('photos', childName, sessionId, filename) }; // Relative path
+        const imagePath = path.join('photos', childName, sessionId, filename); // Relative path
+
+        // Check if the imgpath already exists
+        const existingReport = await reports.findOne({
+            childname: childName,
+            sessionid: sessionId,
+            "images.imgpath": imagePath, // Check if the imgpath already exists
+        });
+
+        if (existingReport) {
+            // If the image path already exists, skip adding it
+            return res.status(200).json({ success: false, message: 'Duplicate image path, not added again.' });
+        }
 
         // Find the document by childName and sessionId, and update the images array
         await reports.findOneAndUpdate(
             { childname: childName, sessionid: sessionId }, // Find by childName and sessionId
-            { $push: { images: imagePathObject } },          // Push the new image path to the images array
-            { new: true, upsert: true }                      // Create a new document if it doesn't exist
+            { $push: { images: { imgpath: imagePath } } },  // Push the new image path to the images array
+            { new: true, upsert: true }                     // Create a new document if it doesn't exist
         );
 
         // Respond to the client only once

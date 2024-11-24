@@ -10,7 +10,7 @@ const app = express();
 const PORT = 3000;
 
 
-connectToMongoDB('mongodb://127.0.0.1:27017/result')
+connectToMongoDB("mongodb+srv://GirishChiluveru:admin@cluster0.ytwmf.mongodb.net/?retryWrites=true&w=majority")
 .then(()=>console.log("MongoDB connected"))
 .catch((err) => console.error("MongoDB connection error:", err));
 
@@ -47,16 +47,16 @@ app.post('/process', async (req, res) => {
       }
   
       
-      const response = await fetch('http://localhost:3000/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ folderPath }),
-    });
+    //   const response = await fetch('http://localhost:3000/analyze', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ folderPath }),
+    // });
 
-   // Call the Flask API with the folder path
-    // const response = await fetch(
-    //   `http://127.0.0.1:5000/analyze_emotions?folder_path=${encodeURIComponent(folderPath)}`
-    // );
+   //Call the Flask API with the folder path
+    const response = await fetch(
+      `http://127.0.0.1:5000/analyze_emotions?folder_path=${encodeURIComponent(folderPath)}`
+    );
       const result = await response.json();
   
       if (!response.ok) {
@@ -67,6 +67,22 @@ app.post('/process', async (req, res) => {
   
       // Save the result in memory or any desired storage
       analysisResults.push({ sessionId, childName, result });
+      try{
+        const storeResponse = await fetch('http://localhost:3000/store-emotions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ childName, sessionId, result })
+      });
+      }
+      catch(error){
+        if (error.name === 'ValidationError') {
+          console.error("Validation Error:", error.message);
+          // Handle the validation error (e.g., return a response to the client)
+      } else {
+          console.error("An unexpected error occurred:", error);
+          // Handle other types of errors
+      }
+      }
   
       return res.status(200).json({
         message: 'Analysis processed successfully',
@@ -76,6 +92,10 @@ app.post('/process', async (req, res) => {
       console.error('Error analyzing session:', error);
       return res.status(500).json({ error: 'Error processing analysis' });
     }
+
+   
+    
+  
   });
 app.get('/results', (req, res) => {
     res.json(analysisResults);

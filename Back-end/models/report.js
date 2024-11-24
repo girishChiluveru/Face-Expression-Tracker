@@ -35,8 +35,8 @@ const reportSchema = new mongoose.Schema({
             neutral: { type: Number, required: true, default: 0 },
         },
         max_emotion_img: {
-            emotion: { type: String, required: true },
-            score: { type: Number, required: true }
+            emotion: { type: String, required: false },
+            score: { type: Number, required: false }
         }
     }],
 }, { timestamps: true }); // Automatically adds createdAt and updatedAt fields.
