@@ -34,8 +34,7 @@ const reportSchema = new mongoose.Schema({
                     required: true
                 },
                 fear: {
-                    type: Number,
-                    required: true
+                    type: Number
                 },
                 happy: {
                     type: Number,
@@ -46,8 +45,7 @@ const reportSchema = new mongoose.Schema({
                     required: true
                 },
                 surprise: {
-                    type: Number,
-                    required: true
+                    type: Number
                 },
                 neutral: {
                     type: Number,
