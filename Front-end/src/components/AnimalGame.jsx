@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 
@@ -67,7 +68,7 @@ function AnimalGame({ onFinish , childName, sessionId}) {
       clearInterval(letterInterval);
       clearInterval(gameInterval);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, [currentAnimal, score, speed]);
 
   // Increase speed incrementally with each score

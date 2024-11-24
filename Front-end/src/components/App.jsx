@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 // /* eslint-disable no-unused-vars */
 // import React, { useState } from 'react';
 // import StartScreen from './StartScreen';
@@ -110,7 +111,7 @@
 
 // export default App;
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import StartScreen from './StartScreen';
 import Quiz from './Quiz';
