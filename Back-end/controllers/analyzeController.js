@@ -9,7 +9,7 @@ async function analyzeFolderController(req, res) {
         }
         const analysisResults = await analyzeFolder(folderPath);
         //console.log(analysisResults);
-        return res.json({analysisResults });
+        return res.json(analysisResults );
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: error.message });
