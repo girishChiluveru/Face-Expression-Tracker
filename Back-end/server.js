@@ -47,16 +47,16 @@ app.post('/process', async (req, res) => {
       }
   
       
-    //   const response = await fetch('http://localhost:3000/analyze', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({ folderPath }),
-    // });
+      const response = await fetch('http://localhost:3000/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ folderPath }),
+    });
 
    //Call the Flask API with the folder path
-    const response = await fetch(
-      `http://127.0.0.1:5000/analyze_emotions?folder_path=${encodeURIComponent(folderPath)}`
-    );
+    // const response = await fetch(
+    //   `http://127.0.0.1:5000/analyze_emotions?folder_path=${encodeURIComponent(folderPath)}`
+    // );
       const result = await response.json();
   
       if (!response.ok) {
